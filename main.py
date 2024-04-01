@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, send_file
 import requests
 import io
 from PIL import Image
@@ -21,8 +21,13 @@ def generate_image():
     text = request.form['text']
     image_bytes = query({"inputs": text})
     image = Image.open(io.BytesIO(image_bytes))
-    image.show()
-    return jsonify({'result': 'success'})
+    
+    # Save the image to a temporary buffer
+    img_io = io.BytesIO()
+    image.save(img_io, 'JPEG')
+    img_io.seek(0)
+    
+    return send_file(img_io, mimetype='image/jpeg')
 
 if __name__ == '__main__':
     app.run(debug=True)
