@@ -4,11 +4,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Text to Image Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .generated-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-    <h1>Text to Image Generator</h1>
-    <textarea id="textInput" rows="4" cols="50"></textarea><br>
-    <button onclick="generateImage()">Generate Image</button>
+    <div class="container">
+        <h1>Text to Image Generator</h1>
+        <textarea id="textInput" rows="4" placeholder="Enter your text here"></textarea>
+        <button onclick="generateImage()">Generate Image</button>
+        <div class="image-container" id="imageContainer"></div>
+    </div>
 
     <script>
         function generateImage() {
@@ -22,10 +88,20 @@
             })
             .then(response => {
                 if (response.ok) {
-                    console.log('Image generated successfully.');
+                    return response.blob();  // Convert response to Blob object
                 } else {
                     console.error('Failed to generate image.');
+                    throw new Error('Failed to generate image.');
                 }
+            })
+            .then(blob => {
+                var img = document.createElement('img');
+                img.src = URL.createObjectURL(blob);
+                img.className = 'generated-image';
+                
+                var imageContainer = document.getElementById("imageContainer");
+                imageContainer.innerHTML = '';
+                imageContainer.appendChild(img);
             })
             .catch(error => console.error('Error:', error));
         }
